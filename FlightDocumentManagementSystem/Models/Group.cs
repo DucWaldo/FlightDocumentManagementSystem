@@ -12,7 +12,7 @@ namespace FlightDocumentManagementSystem.Models
         public string? Name { get; set; }
         public string? Note { get; set; }
         [Required]
-        public string? Creater { get; set; }
+        public string? Creator { get; set; }
 
         public DateTime? TimeCreate { get; set; }
         public DateTime? TimeUpdate { get; set; }

@@ -18,8 +18,8 @@ namespace FlightDocumentManagementSystem.Models
         [ForeignKey("GroupId")]
         public Group? Group { get; set; }
 
-        public Guid DocumentId { get; set; }
-        [ForeignKey("DocumentId")]
-        public Document? Document { get; set; }
+        public Guid CategoryId { get; set; }
+        [ForeignKey("CategoryId")]
+        public Category? Category { get; set; }
     }
 }

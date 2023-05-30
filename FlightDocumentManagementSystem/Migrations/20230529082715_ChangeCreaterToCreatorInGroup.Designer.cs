@@ -4,6 +4,7 @@ using FlightDocumentManagementSystem.Contexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FlightDocumentManagementSystem.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230529082715_ChangeCreaterToCreatorInGroup")]
+    partial class ChangeCreaterToCreatorInGroup
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -306,7 +309,7 @@ namespace FlightDocumentManagementSystem.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("CategoryId")
+                    b.Property<Guid>("DocumentId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Function")
@@ -324,7 +327,7 @@ namespace FlightDocumentManagementSystem.Migrations
 
                     b.HasKey("PermissionId");
 
-                    b.HasIndex("CategoryId");
+                    b.HasIndex("DocumentId");
 
                     b.HasIndex("GroupId");
 
@@ -493,9 +496,9 @@ namespace FlightDocumentManagementSystem.Migrations
 
             modelBuilder.Entity("FlightDocumentManagementSystem.Models.Permission", b =>
                 {
-                    b.HasOne("FlightDocumentManagementSystem.Models.Category", "Category")
+                    b.HasOne("FlightDocumentManagementSystem.Models.Document", "Document")
                         .WithMany()
-                        .HasForeignKey("CategoryId")
+                        .HasForeignKey("DocumentId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -505,7 +508,7 @@ namespace FlightDocumentManagementSystem.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Category");
+                    b.Navigation("Document");
 
                     b.Navigation("Group");
                 });
