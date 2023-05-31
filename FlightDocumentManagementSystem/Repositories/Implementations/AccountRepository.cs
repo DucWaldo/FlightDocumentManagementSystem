@@ -1,5 +1,6 @@
 ﻿using FlightDocumentManagementSystem.Contexts;
 using FlightDocumentManagementSystem.Data;
+using FlightDocumentManagementSystem.Helpers;
 using FlightDocumentManagementSystem.Middlewares;
 using FlightDocumentManagementSystem.Models;
 using FlightDocumentManagementSystem.Repositories.Interfaces;
@@ -35,6 +36,20 @@ namespace FlightDocumentManagementSystem.Repositories.Implementations
             return true;
         }
 
+        public async Task<bool> CheckLoginAsync(Auth auth)
+        {
+            var account = await _dbSet.FirstOrDefaultAsync(a => a.Email == auth.Email);
+            if (account == null || account.Status == false)
+            {
+                return false;
+            }
+            if (PasswordEncryption.VerifyPassword(auth.Password ?? "", account.Password ?? "") == false)
+            {
+                return false;
+            }
+            return true;
+        }
+
         public async Task DeleteAccountAsync(Account account)
         {
             await DeleteAsync(account);
@@ -50,6 +65,12 @@ namespace FlightDocumentManagementSystem.Repositories.Implementations
             return result;
         }
 
+        public async Task<Account?> GetAccountByEmailAsync(string email)
+        {
+            var result = await _dbSet.FirstOrDefaultAsync(a => a.Email == email);
+            return result;
+        }
+
         public async Task<List<Account>> GetAllAccountsAsync()
         {
             return await GetAllWithIncludeAsync(a => a.Role!);
@@ -61,7 +82,7 @@ namespace FlightDocumentManagementSystem.Repositories.Implementations
             {
                 AccountId = Guid.NewGuid(),
                 Email = account.Email,
-                Password = PasswordEncryption.EncryptPassword(account.Password!),
+                Password = PasswordEncryption.EncryptPassword(account.Password!, Generate.GetSalt()),
                 Status = true,
                 TimeCreate = DateTime.UtcNow,
                 TimeUpdate = DateTime.UtcNow,
