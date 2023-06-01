@@ -65,7 +65,9 @@ builder.Services.AddAuthentication(options =>
 });
 builder.Services.AddScoped<IRoleRepository, RoleRepository>()
     .AddScoped<IAccountRepository, AccountRepository>()
-    .AddScoped<IAuthRepository, AuthRepository>();
+    .AddScoped<IAuthRepository, AuthRepository>()
+    .AddScoped<IUserRepository, UserRepository>()
+    .AddScoped<IGroupRepository, GroupRepository>();
 
 var app = builder.Build();
 

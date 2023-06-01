@@ -8,6 +8,7 @@ namespace FlightDocumentManagementSystem.Models
     {
         [Key]
         public Guid UserId { get; set; }
+        public string? StaffCode { get; set; }
         [Required]
         public string? FirstName { get; set; }
         public string? LastName { get; set; }
@@ -15,6 +16,7 @@ namespace FlightDocumentManagementSystem.Models
         public bool Gender { get; set; }
         public string? Address { get; set; }
         public string? City { get; set; }
+        public string? PhoneNumber { get; set; }
         public DateTime DateStart { get; set; }
         public bool Status { get; set; }
 
