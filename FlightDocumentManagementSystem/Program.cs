@@ -67,7 +67,10 @@ builder.Services.AddScoped<IRoleRepository, RoleRepository>()
     .AddScoped<IAccountRepository, AccountRepository>()
     .AddScoped<IAuthRepository, AuthRepository>()
     .AddScoped<IUserRepository, UserRepository>()
-    .AddScoped<IGroupRepository, GroupRepository>();
+    .AddScoped<IGroupRepository, GroupRepository>()
+    .AddScoped<IMemberRepository, MemberRepository>()
+    .AddScoped<ICategoryRepository, CategoryRepository>()
+    .AddScoped<IPermissionRepository, PermissionRepository>();
 
 var app = builder.Build();
 

@@ -15,11 +15,13 @@ namespace FlightDocumentManagementSystem.Controllers
     {
         private readonly IGroupRepository _groupRepository;
         private readonly IAccountRepository _accountRepository;
+        private readonly IMemberRepository _memberRepository;
 
-        public GroupsController(IGroupRepository groupRepository, IAccountRepository accountRepository)
+        public GroupsController(IGroupRepository groupRepository, IAccountRepository accountRepository, IMemberRepository memberRepository)
         {
             _groupRepository = groupRepository;
             _accountRepository = accountRepository;
+            _memberRepository = memberRepository;
         }
 
         // GET: api/Groups
@@ -37,7 +39,7 @@ namespace FlightDocumentManagementSystem.Controllers
 
         // GET: api/Groups/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Group>> GetGroup(Guid id)
+        public async Task<ActionResult<Group>> FindGroup(Guid id)
         {
             var result = await _groupRepository.FindGroupByIdAsync(id);
             if (result == null)
@@ -70,8 +72,6 @@ namespace FlightDocumentManagementSystem.Controllers
                     Data = null
                 });
             }
-
-
 
             var oldGroup = await _groupRepository.FindGroupByIdAsync(id);
             if (oldGroup == null)
@@ -201,7 +201,14 @@ namespace FlightDocumentManagementSystem.Controllers
                     Data = null
                 });
             }
-
+            var members = await _memberRepository.FindMemberByGroupAsync(id);
+            if (members.Count > 0)
+            {
+                foreach (var item in members)
+                {
+                    await _memberRepository.DeleteMemberAsync(item);
+                }
+            }
             await _groupRepository.DeleteGroupAsync(result);
             return Ok(new Notification
             {
