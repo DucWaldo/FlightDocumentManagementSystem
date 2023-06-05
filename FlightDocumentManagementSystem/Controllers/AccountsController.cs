@@ -58,7 +58,7 @@ namespace FlightDocumentManagementSystem.Controllers
         [HttpPost]
         public async Task<ActionResult<Account>> PostAccount([FromForm] AccountDTO account)
         {
-            if (account.Email == null || account.Password == null || account.RoleId == Guid.Empty)
+            if (string.IsNullOrEmpty(account.Email) || string.IsNullOrEmpty(account.Password) || account.RoleId == Guid.Empty)
             {
                 return Ok(new Notification
                 {
@@ -78,7 +78,7 @@ namespace FlightDocumentManagementSystem.Controllers
                     Data = null
                 });
             }
-            if (_accountRepository.CheckIsEmailValid(account.Email!) == false)
+            if (Check.IsEmailCompany(account.Email!) == false)
             {
                 return Ok(new Notification
                 {

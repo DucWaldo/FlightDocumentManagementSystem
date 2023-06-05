@@ -14,5 +14,8 @@ namespace FlightDocumentManagementSystem.Models
         public string? Model { get; set; }
         public int YearOfManufacure { get; set; }
         public int Status { get; set; }
+
+        public DateTime TimeCreate { get; set; }
+        public DateTime TimeUpdate { get; set; }
     }
 }

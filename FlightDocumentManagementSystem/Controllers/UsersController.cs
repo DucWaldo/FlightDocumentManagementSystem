@@ -110,7 +110,7 @@ namespace FlightDocumentManagementSystem.Controllers
                     Data = null
                 });
             }
-            if (Regex.IsMatch(user.PhoneNumber!, @"^\d{10}$") == false)
+            if (Check.IsPhone(user.PhoneNumber!) == false)
             {
                 return Ok(new Notification
                 {

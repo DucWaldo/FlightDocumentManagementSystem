@@ -5,7 +5,6 @@ using FlightDocumentManagementSystem.Middlewares;
 using FlightDocumentManagementSystem.Models;
 using FlightDocumentManagementSystem.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
-using System.Text.RegularExpressions;
 
 namespace FlightDocumentManagementSystem.Repositories.Implementations
 {
@@ -13,17 +12,6 @@ namespace FlightDocumentManagementSystem.Repositories.Implementations
     {
         public AccountRepository(ApplicationDbContext context) : base(context)
         {
-        }
-
-        public bool CheckIsEmailValid(string email)
-        {
-            // Regular expression to check format email@vietjetair.com
-            string emailPattern = @"^[a-zA-Z0-9_.+-]+@vietjetair\.com$";
-
-            // Check email format using Regex.IsMatch()
-            bool isValid = Regex.IsMatch(email, emailPattern);
-
-            return isValid;
         }
 
         public async Task<bool> CheckIsExistByEmail(string email)

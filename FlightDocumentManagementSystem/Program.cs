@@ -22,9 +22,9 @@ builder.Services.AddSwaggerGen(c =>
     c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
         In = ParameterLocation.Header,
-        Description = "Please insert bearer [token]",
+        Description = "Please insert [token]",
         Name = "Authorization",
-        Type = SecuritySchemeType.ApiKey,
+        Type = SecuritySchemeType.Http,
         BearerFormat = "JWT",
         Scheme = "bearer"
     });
@@ -70,7 +70,9 @@ builder.Services.AddScoped<IRoleRepository, RoleRepository>()
     .AddScoped<IGroupRepository, GroupRepository>()
     .AddScoped<IMemberRepository, MemberRepository>()
     .AddScoped<ICategoryRepository, CategoryRepository>()
-    .AddScoped<IPermissionRepository, PermissionRepository>();
+    .AddScoped<IPermissionRepository, PermissionRepository>()
+    .AddScoped<IAirportRepository, AirportRepository>()
+    .AddScoped<IAircraftRepository, AircraftRepository>();
 
 var app = builder.Build();
 
