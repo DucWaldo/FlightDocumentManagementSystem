@@ -3,25 +3,26 @@ using FlightDocumentManagementSystem.Helpers;
 using FlightDocumentManagementSystem.Models;
 using FlightDocumentManagementSystem.Repositories.Interfaces;
 using Microsoft.AspNetCore.Mvc;
+using System.Globalization;
 
 namespace FlightDocumentManagementSystem.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class AircraftsController : ControllerBase
+    public class FlightsController : ControllerBase
     {
-        private readonly IAircraftRepository _aircraftRepository;
+        private readonly IFlightRepository _flightRepository;
 
-        public AircraftsController(IAircraftRepository aircraftRepository)
+        public FlightsController(IFlightRepository flightRepository)
         {
-            _aircraftRepository = aircraftRepository;
+            _flightRepository = flightRepository;
         }
 
-        // GET: api/Aircrafts
+        // GET: api/Flights
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Aircraft>>> GetAircrafts()
+        public async Task<ActionResult<IEnumerable<Flight>>> GetFlights()
         {
-            var result = await _aircraftRepository.GetAllAircraftAsync();
+            var result = await _flightRepository.GetAllFlightAsync();
             return Ok(new Notification
             {
                 Success = true,
@@ -30,17 +31,17 @@ namespace FlightDocumentManagementSystem.Controllers
             });
         }
 
-        // GET: api/Aircrafts/5
+        // GET: api/Flights/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Aircraft>> GetAircraft(Guid id)
+        public async Task<ActionResult<Flight>> GetFlight(Guid id)
         {
-            var result = await _aircraftRepository.FindAircraftByIdAsync(id);
+            var result = await _flightRepository.FindFlightByIdAsync(id);
             if (result == null)
             {
                 return Ok(new Notification
                 {
                     Success = false,
-                    Message = "This Aircraft doesn't exist",
+                    Message = "This flight doesn't exist",
                     Data = null
                 });
             }
@@ -52,11 +53,11 @@ namespace FlightDocumentManagementSystem.Controllers
             });
         }
 
-        //POST: api/Aircraft
+        // POST: api/Flights
         [HttpPost]
-        public async Task<ActionResult<Aircraft>> PostAircraft(AircraftDTO aircraft)
+        public async Task<ActionResult<Flight>> PostFlight(FlightDTO flight)
         {
-            if (_aircraftRepository.ValidateAircraftDTO(aircraft) == false)
+            if (_flightRepository.ValidateFlightDTO(flight) == false)
             {
                 return Ok(new Notification
                 {
@@ -65,25 +66,38 @@ namespace FlightDocumentManagementSystem.Controllers
                     Data = null
                 });
             }
-            if (await _aircraftRepository.CheckSerialToInsertAsync(aircraft.Serial!) == false)
+
+            if (await _flightRepository.CheckFlightNoToInsertAsync(flight.FlightNo!) == false)
             {
                 return Ok(new Notification
                 {
                     Success = false,
-                    Message = "This serial already exist",
+                    Message = "FlightNo Already exist",
                     Data = null
                 });
             }
-            if (aircraft.Status > 2)
+
+            DateTime dateTimeValue;
+            if (!DateTime.TryParseExact(flight.Date, "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out dateTimeValue))
             {
                 return Ok(new Notification
                 {
                     Success = false,
-                    Message = "Please choose 0: Shut down, 1: Is maintained, 2: Active",
+                    Message = "Invalid date",
                     Data = null
                 });
             }
-            var result = await _aircraftRepository.InsertAircraftAsync(aircraft);
+            if (dateTimeValue.Date < DateTime.Today)
+            {
+                return Ok(new Notification
+                {
+                    Success = false,
+                    Message = "Date is less than current date",
+                    Data = null
+                });
+            }
+
+            var result = await _flightRepository.InsertFlightAsync(flight);
             return Ok(new Notification
             {
                 Success = true,
@@ -92,11 +106,22 @@ namespace FlightDocumentManagementSystem.Controllers
             });
         }
 
-        // PUT: api/Aircrafts/5
+        // PUT: api/Flights/5
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutAircraft(Guid id, AircraftDTO aircraft)
+        public async Task<IActionResult> PutFlight(Guid id, FlightDTO flight)
         {
-            if (_aircraftRepository.ValidateAircraftDTO(aircraft) == false)
+            var oldFlight = await _flightRepository.FindFlightByIdAsync(id);
+            if (oldFlight == null)
+            {
+                return Ok(new Notification
+                {
+                    Success = false,
+                    Message = "This flight doesn't exist",
+                    Data = null
+                });
+            }
+
+            if (_flightRepository.ValidateFlightDTO(flight) == false)
             {
                 return Ok(new Notification
                 {
@@ -105,35 +130,39 @@ namespace FlightDocumentManagementSystem.Controllers
                     Data = null
                 });
             }
-            var oldAircraft = await _aircraftRepository.FindAircraftByIdAsync(id);
-            if (oldAircraft == null)
+
+            if (await _flightRepository.CheckFlightNoToUpdateAsync(flight.FlightNo!, oldFlight) == false)
             {
                 return Ok(new Notification
                 {
                     Success = false,
-                    Message = "This Aircraft doesn't exist",
+                    Message = "FlightNo Already exist",
                     Data = null
                 });
             }
-            if (await _aircraftRepository.CheckSerialToUpdateAsync(aircraft.Serial!, oldAircraft) == false)
+
+            DateTime dateTimeValue;
+            if (!DateTime.TryParseExact(flight.Date, "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out dateTimeValue))
             {
                 return Ok(new Notification
                 {
                     Success = false,
-                    Message = "This serial already exist",
+                    Message = "Invalid date",
                     Data = null
                 });
             }
-            if (aircraft.Status > 2)
+
+            if (dateTimeValue.Date < DateTime.Today)
             {
                 return Ok(new Notification
                 {
                     Success = false,
-                    Message = "Please choose 0: Shut down, 1: Is maintained, 2: Active",
+                    Message = "Date is less than current date",
                     Data = null
                 });
             }
-            var result = await _aircraftRepository.UpdateAircraftAsync(oldAircraft, aircraft);
+
+            var result = await _flightRepository.UpdateFlightAsync(oldFlight, flight);
             return Ok(new Notification
             {
                 Success = true,
@@ -142,21 +171,21 @@ namespace FlightDocumentManagementSystem.Controllers
             });
         }
 
-        // DELETE: api/Aircraft/5
+        // DELETE: api/Flights/5
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteAircraft(Guid id)
+        public async Task<IActionResult> DeleteFlight(Guid id)
         {
-            var result = await _aircraftRepository.FindAircraftByIdAsync(id);
+            var result = await _flightRepository.FindFlightByIdAsync(id);
             if (result == null)
             {
                 return Ok(new Notification
                 {
                     Success = false,
-                    Message = "This Aircraft doesn't exist",
+                    Message = "This flight doesn't exist",
                     Data = null
                 });
             }
-            await _aircraftRepository.DeleteAircraftAsync(result);
+            await _flightRepository.DeleteFlightAsync(result);
             return Ok(new Notification
             {
                 Success = true,

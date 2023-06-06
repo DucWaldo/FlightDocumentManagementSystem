@@ -72,7 +72,9 @@ builder.Services.AddScoped<IRoleRepository, RoleRepository>()
     .AddScoped<ICategoryRepository, CategoryRepository>()
     .AddScoped<IPermissionRepository, PermissionRepository>()
     .AddScoped<IAirportRepository, AirportRepository>()
-    .AddScoped<IAircraftRepository, AircraftRepository>();
+    .AddScoped<IAircraftRepository, AircraftRepository>()
+    .AddScoped<IFlightRepository, FlightRepository>()
+    .AddScoped<IScheduleRepository, ScheduleRepository>();
 
 var app = builder.Build();
 

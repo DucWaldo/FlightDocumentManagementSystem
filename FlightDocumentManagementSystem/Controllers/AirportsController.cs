@@ -54,7 +54,7 @@ namespace FlightDocumentManagementSystem.Controllers
 
         // POST: api/Airport
         [HttpPost]
-        public async Task<ActionResult<Airport>> PostAirport([FromForm] AirportDTO airport)
+        public async Task<ActionResult<Airport>> PostAirport(AirportDTO airport)
         {
             if (_airportRepository.ValidateAirportDTO(airport) == false)
             {

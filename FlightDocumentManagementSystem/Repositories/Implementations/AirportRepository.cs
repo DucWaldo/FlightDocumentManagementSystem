@@ -56,7 +56,7 @@ namespace FlightDocumentManagementSystem.Repositories.Implementations
                 AirportId = Guid.NewGuid(),
                 Name = airport.Name,
                 City = airport.City,
-                Coutry = airport.Coutry,
+                Country = airport.Country,
                 IATACode = airport.IATACode,
                 ICAOCode = airport.ICAOCode,
                 Latitude = airport.Latitude,
@@ -76,7 +76,7 @@ namespace FlightDocumentManagementSystem.Repositories.Implementations
         {
             oldAirport.Name = newAirport.Name;
             oldAirport.City = newAirport.City;
-            oldAirport.Coutry = newAirport.Coutry;
+            oldAirport.Country = newAirport.Country;
             oldAirport.IATACode = newAirport.IATACode;
             oldAirport.ICAOCode = newAirport.ICAOCode;
             oldAirport.Latitude = newAirport.Latitude;
@@ -102,7 +102,7 @@ namespace FlightDocumentManagementSystem.Repositories.Implementations
                 return false;
             }
 
-            if (string.IsNullOrEmpty(airport.Coutry))
+            if (string.IsNullOrEmpty(airport.Country))
             {
                 return false;
             }
