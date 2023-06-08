@@ -4,6 +4,7 @@ using FlightDocumentManagementSystem.Contexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FlightDocumentManagementSystem.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230607045604_UpdatePublicUrlInDocument")]
+    partial class UpdatePublicUrlInDocument
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -169,9 +172,6 @@ namespace FlightDocumentManagementSystem.Migrations
                         .HasColumnType("bit");
 
                     b.Property<string>("LogoUrl")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("PublicLogoUrl")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("TimeCreate")
@@ -399,35 +399,6 @@ namespace FlightDocumentManagementSystem.Migrations
                     b.ToTable("Schedule");
                 });
 
-            modelBuilder.Entity("FlightDocumentManagementSystem.Models.Signature", b =>
-                {
-                    b.Property<Guid>("SignatureId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("DocumentId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("PublicUrl")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("TimeCreate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime>("TimeUpdate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Url")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("SignatureId");
-
-                    b.HasIndex("DocumentId");
-
-                    b.ToTable("Signature");
-                });
-
             modelBuilder.Entity("FlightDocumentManagementSystem.Models.TokenManager", b =>
                 {
                     b.Property<Guid>("IdRefreshToken")
@@ -616,17 +587,6 @@ namespace FlightDocumentManagementSystem.Migrations
                     b.Navigation("Airport");
 
                     b.Navigation("Flight");
-                });
-
-            modelBuilder.Entity("FlightDocumentManagementSystem.Models.Signature", b =>
-                {
-                    b.HasOne("FlightDocumentManagementSystem.Models.Document", "Document")
-                        .WithMany()
-                        .HasForeignKey("DocumentId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Document");
                 });
 
             modelBuilder.Entity("FlightDocumentManagementSystem.Models.TokenManager", b =>

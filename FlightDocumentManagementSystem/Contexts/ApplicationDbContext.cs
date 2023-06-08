@@ -20,6 +20,7 @@ namespace FlightDocumentManagementSystem.Contexts
         public DbSet<Permission> Permissions { get; set; }
         public DbSet<Role> Roles { get; set; }
         public DbSet<Schedule> Schedules { get; set; }
+        public DbSet<Signature> Signatures { get; set; }
         public DbSet<TokenManager> TokenManagers { get; set; }
         public DbSet<User> Users { get; set; }
         #endregion

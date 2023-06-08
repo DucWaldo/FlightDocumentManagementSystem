@@ -11,6 +11,7 @@ namespace FlightDocumentManagementSystem.Models
         [Required]
         public string? Name { get; set; }
         public string? Url { get; set; }
+        public string? PublicUrl { get; set; }
         public string? Version { get; set; }
         public bool Action { get; set; }
 
@@ -25,8 +26,8 @@ namespace FlightDocumentManagementSystem.Models
         [ForeignKey("FlightId")]
         public Flight? Flight { get; set; }
 
-        public Guid UserId { get; set; }
-        [ForeignKey("UserId")]
-        public User? User { get; set; }
+        public Guid AccountId { get; set; }
+        [ForeignKey("AccountId")]
+        public Account? Account { get; set; }
     }
 }

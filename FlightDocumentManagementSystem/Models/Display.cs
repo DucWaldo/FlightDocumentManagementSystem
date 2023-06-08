@@ -9,6 +9,7 @@ namespace FlightDocumentManagementSystem.Models
         [Key]
         public Guid DisplayId { get; set; }
         public string? LogoUrl { get; set; }
+        public string? PublicLogoUrl { get; set; }
         public bool CaptchaStatus { get; set; }
 
         public DateTime TimeCreate { get; set; }
