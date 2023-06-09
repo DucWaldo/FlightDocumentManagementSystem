@@ -6,6 +6,7 @@ namespace FlightDocumentManagementSystem.Repositories.Interfaces
     public interface IDocumentRepository : IRepository<Document>
     {
         public Task<List<Document>> GetAllDocumentAsync();
+        public Task<PagingDTO<Document>> GetAllDocumentPagingAsync(int pageNumber, int pageSize);
         public Task<string> GetNextVersion(DocumentDTO document);
         public Task<Document?> FindDocumentById(Guid id);
         public Task<Document> InsertSentDocumentAsync(DocumentDTO document, Account creator, Flight flight);

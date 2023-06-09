@@ -39,6 +39,12 @@ namespace FlightDocumentManagementSystem.Repositories.Implementations
             return result;
         }
 
+        public async Task<PagingDTO<User>> GetAllUsersPagingAsync(int pageNumber, int pageSize)
+        {
+            var result = await GetPagingAsync(pageNumber, pageSize, u => u.StaffCode!, false);
+            return result;
+        }
+
         public async Task<User> InsertUserAsync(UserDTO user)
         {
             var staffCode = "vj" + Generate.GetStaffCode();

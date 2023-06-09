@@ -49,6 +49,12 @@ namespace FlightDocumentManagementSystem.Repositories.Implementations
             return result;
         }
 
+        public async Task<PagingDTO<Aircraft>> GetAllAircraftPagingAsync(int pageNumber, int pageSize)
+        {
+            var result = await GetPagingAsync(pageNumber, pageSize, a => a.Serial!, false);
+            return result;
+        }
+
         public async Task<Aircraft> InsertAircraftAsync(AircraftDTO aircraft)
         {
             var newAircraft = new Aircraft()

@@ -17,7 +17,7 @@ namespace FlightDocumentManagementSystem.Controllers
             _airportRepository = airportRepository;
         }
 
-        // GET: api/Airport
+        // GET: api/Airports
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Airport>>> GetAirports()
         {
@@ -30,7 +30,20 @@ namespace FlightDocumentManagementSystem.Controllers
             });
         }
 
-        // GET: api/Airport/5
+        // GET: api/Airports
+        [HttpGet("Paging")]
+        public async Task<ActionResult<IEnumerable<Airport>>> GetAirportsPaging(int pageNumber, int pageSize)
+        {
+            var result = await _airportRepository.GetAllAirportsPagingAsync(pageNumber, pageSize);
+            return Ok(new Notification
+            {
+                Success = true,
+                Message = "Get All Successfully",
+                Data = result
+            });
+        }
+
+        // GET: api/Airports/5
         [HttpGet("{id}")]
         public async Task<ActionResult<Airport>> GetAirport(Guid id)
         {
@@ -52,7 +65,7 @@ namespace FlightDocumentManagementSystem.Controllers
             });
         }
 
-        // POST: api/Airport
+        // POST: api/Airports
         [HttpPost]
         public async Task<ActionResult<Airport>> PostAirport(AirportDTO airport)
         {
@@ -93,7 +106,7 @@ namespace FlightDocumentManagementSystem.Controllers
             });
         }
 
-        // PUT: api/Airport/5
+        // PUT: api/Airports/5
         [HttpPut("{id}")]
         public async Task<IActionResult> PutAirport(Guid id, AirportDTO airport)
         {
@@ -147,7 +160,7 @@ namespace FlightDocumentManagementSystem.Controllers
             });
         }
 
-        // DELETE: api/Airport/5
+        // DELETE: api/Airports/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteAirport(Guid id)
         {

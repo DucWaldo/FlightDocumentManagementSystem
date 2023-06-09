@@ -49,6 +49,12 @@ namespace FlightDocumentManagementSystem.Repositories.Implementations
             return result;
         }
 
+        public async Task<PagingDTO<Group>> GetAllGroupsPagingAsync(int pageNumber, int pageSize)
+        {
+            var result = await GetPagingAsync(pageNumber, pageSize, g => g.Name!, false);
+            return result;
+        }
+
         public async Task<Group> InsertGroupAsync(GroupDTO group, string creator)
         {
             var newGroup = new Group()

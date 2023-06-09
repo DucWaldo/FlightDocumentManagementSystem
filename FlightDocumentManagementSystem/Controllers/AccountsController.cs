@@ -35,9 +35,22 @@ namespace FlightDocumentManagementSystem.Controllers
             });
         }
 
+        // GET: api/Accounts/Paging
+        [HttpGet("Paging")]
+        public async Task<ActionResult<IEnumerable<Account>>> GetAccountsPaging(int pageNumber, int pageSize)
+        {
+            var result = await _accountRepository.GetAllAccountsPagingAsync(pageNumber, pageNumber);
+            return Ok(new Notification
+            {
+                Success = true,
+                Message = "Get List Successfully",
+                Data = result
+            });
+        }
+
         // GET: api/Accounts/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Account>> FindAccount(Guid id)
+        public async Task<ActionResult<Account>> GetAccount(Guid id)
         {
             var result = await _accountRepository.FindAccountByIdAsync(id);
             if (result == null)

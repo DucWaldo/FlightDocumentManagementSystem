@@ -42,6 +42,19 @@ namespace FlightDocumentManagementSystem.Controllers
             });
         }
 
+        // GET: api/Documents/Paging
+        [HttpGet("Paging")]
+        public async Task<ActionResult<IEnumerable<Document>>> GetDocumentsPaging(int pageNumber, int pageSize)
+        {
+            var result = await _documentRepository.GetAllDocumentPagingAsync(pageNumber, pageSize);
+            return Ok(new Notification
+            {
+                Success = true,
+                Message = "Get all successfully",
+                Data = result
+            });
+        }
+
         // GET: api/Documents/5
         [HttpGet("{id}")]
         public async Task<ActionResult<Document>> GetDocument(Guid id)

@@ -27,29 +27,8 @@ namespace FlightDocumentManagementSystem.Helpers
             subject = _configuration["Mail:Subject"]!;
         }
 
-        public static void SendEmail(string recipient, string funcString, string id, int action, string pwd)
+        public static void SendEmail(string recipient, string funcString, string htmlBody)
         {
-            string htmlBody = string.Empty;
-            switch (action)
-            {
-                case 1:
-                    {
-                        htmlBody = EmailResetPasswordContent(recipient, id);
-                        break;
-                    };
-                case 2:
-                    {
-                        htmlBody = EmailChangePasswordContent(recipient, pwd, id);
-                        break;
-                    };
-                case 3:
-                    {
-                        htmlBody = EmailResetPasswordContent(recipient, id);
-                        break;
-                    };
-            }
-            //string htmlBody = EmailResetPasswordContent(recipient, id);
-
             var message = new MimeMessage();
             message.From.Add(new MailboxAddress(name, email));
             message.To.Add(new MailboxAddress("", recipient));
@@ -71,9 +50,9 @@ namespace FlightDocumentManagementSystem.Helpers
             }
         }
 
-        public static string EmailResetPasswordContent(string email, string id)
+        public static string EmailResetPasswordContent(string email, string emailLogId)
         {
-            var resetPasswordLink = $"https://localhost:7099/api/Auths/ResetPassword?email={email}&id={id}";
+            var resetPasswordLink = $"https://localhost:7099/api/Auths/ResetPassword?email={email}&id={emailLogId}";
             var logoLink = Cloudinary.GetImageUrl("FlightDocumentManagementSystem/Logo");
             string emailContent = $@"   <!DOCTYPE html>
                                         <html>
@@ -121,9 +100,9 @@ namespace FlightDocumentManagementSystem.Helpers
             return emailContent;
         }
 
-        public static string EmailChangePasswordContent(string email, string newPassword, string id)
+        public static string EmailChangePasswordContent(string email, string newPassword, string emailLogId)
         {
-            var resetPasswordLink = $"https://localhost:7099/api/Auths/UpdatePassword?email={email}&password={newPassword}&id={id}";
+            var resetPasswordLink = $"https://localhost:7099/api/Auths/UpdatePassword?email={email}&password={newPassword}&id={emailLogId}";
             var logoLink = Cloudinary.GetImageUrl("FlightDocumentManagementSystem/Logo");
             string emailContent = $@"   <!DOCTYPE html>
                                         <html>

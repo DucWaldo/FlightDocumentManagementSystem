@@ -217,7 +217,8 @@ namespace FlightDocumentManagementSystem.Middlewares
                 });
             }
             var emailLogId = await _emailLogRepository.InsertEmailLogAsync(account.AccountId);
-            Email.SendEmail(account.Email!, "Reset Password", emailLogId, 1, "");
+            var emailHtml = Email.EmailResetPasswordContent(account.Email!, emailLogId);
+            Email.SendEmail(account.Email!, "Reset Password", emailHtml);
 
             return Ok(new Notification
             {
@@ -261,7 +262,8 @@ namespace FlightDocumentManagementSystem.Middlewares
                 });
             }
             var emailLogId = await _emailLogRepository.InsertEmailLogAsync(account.AccountId);
-            Email.SendEmail(account.Email!, "Reset Password", emailLogId, 2, newPassword);
+            var emailHtml = Email.EmailChangePasswordContent(account.Email!, newPassword, emailLogId);
+            Email.SendEmail(account.Email!, "Reset Password", emailHtml);
             return Ok(new Notification
             {
                 Success = true,

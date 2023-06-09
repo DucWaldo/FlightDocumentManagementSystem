@@ -46,6 +46,12 @@ namespace FlightDocumentManagementSystem.Repositories.Implementations
             return result;
         }
 
+        public async Task<PagingDTO<Document>> GetAllDocumentPagingAsync(int pageNumber, int pageSize)
+        {
+            var result = await GetPagingAsync(pageNumber, pageSize, d => d.Version!, true, d => d.Category!, d => d.Flight!, d => d.Account!.Role!);
+            return result;
+        }
+
         public async Task<string> GetNextVersion(DocumentDTO document)
         {
             var documents = await _dbSet.Where(d => d.FlightId == document.FlightId && d.Name! == document.File!.FileName && d.CategoryId == document.CategoryId)

@@ -7,6 +7,7 @@ namespace FlightDocumentManagementSystem.Repositories.Interfaces
     public interface IAccountRepository : IRepository<Account>
     {
         public Task<List<Account>> GetAllAccountsAsync();
+        public Task<PagingDTO<Account>> GetAllAccountsPagingAsync(int pageNumber, int pageSize);
         public Task<Account?> GetAccountByEmailAsync(string email);
         public Task<Account?> FindAccountByIdAsync(Guid accountId);
         public Task<Account> InsertAccountAsync(AccountDTO account);

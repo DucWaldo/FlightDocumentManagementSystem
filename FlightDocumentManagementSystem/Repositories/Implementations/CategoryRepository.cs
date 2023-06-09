@@ -49,6 +49,12 @@ namespace FlightDocumentManagementSystem.Repositories.Implementations
             return result;
         }
 
+        public async Task<PagingDTO<Category>> GetAllCategoriesPagingAsync(int pageNumber, int pageSize)
+        {
+            var result = await GetPagingAsync(pageNumber, pageSize, c => c.Name!, false);
+            return result;
+        }
+
         public async Task<Category> InsertCategoryAsync(CategoryDTO category)
         {
             var newCategory = new Category()

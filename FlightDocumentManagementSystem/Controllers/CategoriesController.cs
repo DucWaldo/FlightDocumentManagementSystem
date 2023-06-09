@@ -30,6 +30,19 @@ namespace FlightDocumentManagementSystem.Controllers
             });
         }
 
+        // GET: api/Categories/Paging
+        [HttpGet("Paging")]
+        public async Task<ActionResult<IEnumerable<Category>>> GetCategoriesPaging(int pageNumber, int pageSize)
+        {
+            var result = await _categoryRepository.GetAllCategoriesPagingAsync(pageNumber, pageSize);
+            return Ok(new Notification
+            {
+                Success = true,
+                Message = "Get all successfully",
+                Data = result
+            });
+        }
+
         // GET: api/Categories/5
         [HttpGet("{id}")]
         public async Task<ActionResult<Category>> FindCategory(Guid id)

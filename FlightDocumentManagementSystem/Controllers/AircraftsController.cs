@@ -30,6 +30,19 @@ namespace FlightDocumentManagementSystem.Controllers
             });
         }
 
+        // GET: api/Aircrafts/Paging
+        [HttpGet("Paging")]
+        public async Task<ActionResult<IEnumerable<Aircraft>>> GetAircraftsPaging(int pageNumber, int pageSize)
+        {
+            var result = await _aircraftRepository.GetAllAircraftPagingAsync(pageNumber, pageSize);
+            return Ok(new Notification
+            {
+                Success = true,
+                Message = "Get all successfully",
+                Data = result
+            });
+        }
+
         // GET: api/Aircrafts/5
         [HttpGet("{id}")]
         public async Task<ActionResult<Aircraft>> GetAircraft(Guid id)

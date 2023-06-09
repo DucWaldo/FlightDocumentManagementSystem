@@ -1,4 +1,5 @@
 ﻿using FlightDocumentManagementSystem.Contexts;
+using FlightDocumentManagementSystem.Data;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
 
@@ -36,6 +37,41 @@ namespace FlightDocumentManagementSystem.Repositories
             return await _dbSet.ToListAsync();
         }
 
+        public async Task<PagingDTO<TEntity>> GetPagingAsync(int pageNumber, int pageSize, Expression<Func<TEntity, object>> orderBy, bool isDescending, params Expression<Func<TEntity, object>>[] includeExpressions)
+        {
+            var query = _context.Set<TEntity>().AsQueryable();
+
+            foreach (var includeProperty in includeExpressions)
+            {
+                query = query.Include(includeProperty);
+            }
+            if (orderBy != null)
+            {
+                if (isDescending)
+                {
+                    query = query.OrderByDescending(orderBy);
+                }
+                else
+                {
+                    query = query.OrderBy(orderBy);
+                }
+            }
+            int skip = (pageNumber - 1) * pageSize;
+
+            var pagedData = await query.Skip(skip).Take(pageSize).ToListAsync();
+            int totalCount = GetAllAsync().Result.Count;
+            int totalPages = (int)Math.Ceiling((double)totalCount / pageSize);
+            var paginationResponse = new PagingDTO<TEntity>
+            {
+                TotalCount = totalCount,
+                TotalPages = totalPages,
+                CurrentPage = pageNumber,
+                PageSize = pageSize,
+                Result = pagedData
+            };
+            return paginationResponse;
+        }
+
         public async Task<TEntity?> FindByIdAsync(Guid id)
         {
             return await _dbSet.FindAsync(id);
@@ -70,5 +106,7 @@ namespace FlightDocumentManagementSystem.Repositories
             _dbSet.RemoveRange(entity);
             await _context.SaveChangesAsync();
         }
+
+
     }
 }

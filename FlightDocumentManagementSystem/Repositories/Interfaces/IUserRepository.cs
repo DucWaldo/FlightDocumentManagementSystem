@@ -6,6 +6,7 @@ namespace FlightDocumentManagementSystem.Repositories.Interfaces
     public interface IUserRepository : IRepository<User>
     {
         public Task<List<User>> GetAllUsersAsync();
+        public Task<PagingDTO<User>> GetAllUsersPagingAsync(int pageNumber, int pageSize);
         public Task<User?> FindUserByIdAsync(Guid id);
         public Task<User> InsertUserAsync(UserDTO user);
         public Task<User> UpdateUserAsync(User oldUser, UserDTO newUser);

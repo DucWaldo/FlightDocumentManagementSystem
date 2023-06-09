@@ -64,6 +64,12 @@ namespace FlightDocumentManagementSystem.Repositories.Implementations
             return await GetAllWithIncludeAsync(a => a.Role!);
         }
 
+        public async Task<PagingDTO<Account>> GetAllAccountsPagingAsync(int pageNumber, int pageSize)
+        {
+            var result = await GetPagingAsync(pageNumber, pageSize, a => a.Email!, false, a => a.Role!);
+            return result;
+        }
+
         public async Task<Account> InsertAccountAsync(AccountDTO account)
         {
             var newAccount = new Account()

@@ -6,6 +6,7 @@ namespace FlightDocumentManagementSystem.Repositories.Interfaces
     public interface IAircraftRepository : IRepository<Aircraft>
     {
         public Task<List<Aircraft>> GetAllAircraftAsync();
+        public Task<PagingDTO<Aircraft>> GetAllAircraftPagingAsync(int pageNumber, int pageSize);
         public Task<Aircraft?> FindAircraftByIdAsync(Guid id);
         public Task<Aircraft> InsertAircraftAsync(AircraftDTO aircraft);
         public Task<Aircraft> UpdateAircraftAsync(Aircraft oldAircraft, AircraftDTO newAircraft);

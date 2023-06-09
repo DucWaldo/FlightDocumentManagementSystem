@@ -49,6 +49,12 @@ namespace FlightDocumentManagementSystem.Repositories.Implementations
             return result;
         }
 
+        public async Task<PagingDTO<Airport>> GetAllAirportsPagingAsync(int pageNumber, int pageSize)
+        {
+            var result = await GetPagingAsync(pageNumber, pageSize, a => a.Name!, false);
+            return result;
+        }
+
         public async Task<Airport> InsertAirportAsync(AirportDTO airport)
         {
             var newAirport = new Airport()

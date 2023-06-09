@@ -6,6 +6,7 @@ namespace FlightDocumentManagementSystem.Repositories.Interfaces
     public interface IAirportRepository : IRepository<Airport>
     {
         public Task<List<Airport>> GetAllAirportsAsync();
+        public Task<PagingDTO<Airport>> GetAllAirportsPagingAsync(int pageNumber, int pageSize);
         public Task<Airport?> FindAirportAsync(Guid id);
         public Task<Airport> InsertAirportAsync(AirportDTO airport);
         public Task<Airport> UpdateAirportAsync(Airport oldAirport, AirportDTO newAirport);
