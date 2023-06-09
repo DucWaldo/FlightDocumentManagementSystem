@@ -13,5 +13,6 @@ namespace FlightDocumentManagementSystem.Repositories.Interfaces
         public Task DeletePermissionAsync(Permission permission);
         public bool CheckFunction(string function);
         public Task<bool> CheckGroupInCategory(Guid groupId, Guid categoryId);
+        public Task<bool> CheckAccountPermissionAsync(Account account, Category category);
     }
 }

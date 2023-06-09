@@ -79,5 +79,11 @@ namespace FlightDocumentManagementSystem.Repositories.Implementations
             await InsertAsync(newAccount);
             return newAccount;
         }
+
+        public async Task UpdatePasswordAsync(Account account, string password)
+        {
+            account.Password = PasswordEncryption.EncryptPassword(password, Generate.GetSalt());
+            await UpdateAsync(account);
+        }
     }
 }

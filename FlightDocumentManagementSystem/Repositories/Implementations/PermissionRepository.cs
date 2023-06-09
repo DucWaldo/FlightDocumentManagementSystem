@@ -8,8 +8,24 @@ namespace FlightDocumentManagementSystem.Repositories.Implementations
 {
     public class PermissionRepository : RepositoryBase<Permission>, IPermissionRepository
     {
-        public PermissionRepository(ApplicationDbContext context) : base(context)
+        private readonly IMemberRepository _memberRepository;
+
+        public PermissionRepository(ApplicationDbContext context, IMemberRepository memberRepository) : base(context)
         {
+            _memberRepository = memberRepository;
+        }
+
+        public async Task<bool> CheckAccountPermissionAsync(Account account, Category category)
+        {
+            var permissions = await _dbSet.Where(p => p.CategoryId == category.CategoryId && p.Function == "Read and modify").ToListAsync();
+            foreach (var item in permissions)
+            {
+                if (await _memberRepository.FindMemberByPermissionAsync(item, account) != null)
+                {
+                    return true;
+                }
+            }
+            return false;
         }
 
         public bool CheckFunction(string function)

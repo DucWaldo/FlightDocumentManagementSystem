@@ -10,6 +10,7 @@ namespace FlightDocumentManagementSystem.Repositories.Interfaces
         public Task<Account?> GetAccountByEmailAsync(string email);
         public Task<Account?> FindAccountByIdAsync(Guid accountId);
         public Task<Account> InsertAccountAsync(AccountDTO account);
+        public Task UpdatePasswordAsync(Account account, string password);
         public Task DeleteAccountAsync(Account account);
         public Task<bool> CheckIsExistByEmail(string email);
         public Task<bool> CheckLoginAsync(Auth auth);

@@ -73,6 +73,7 @@ namespace FlightDocumentManagementSystem.Middlewares
             });
         }
 
+        // POST: api/Auths/RefreshToken
         [HttpPost("RefreshToken")]
         public async Task<IActionResult> RefreshToken(Token tokens)
         {
@@ -187,6 +188,7 @@ namespace FlightDocumentManagementSystem.Middlewares
             }
         }
 
+        // POST: api/Auths/Logout
         [Authorize]
         [HttpPost("Logout")]
         public IActionResult Logout()
@@ -194,6 +196,64 @@ namespace FlightDocumentManagementSystem.Middlewares
             return Ok(new
             {
                 message = "Logout success"
+            });
+        }
+
+        // POST: api/Auths/ForgotPassword
+        [HttpPost("ForgotPassword")]
+        public async Task<ActionResult> PostForgotPassword(string email)
+        {
+            var account = await _accountRepository.GetAccountByEmailAsync(email);
+            if (account == null)
+            {
+                return Ok(new Notification
+                {
+                    Success = false,
+                    Message = "Invalid Email",
+                    Data = null
+                });
+            }
+            Email.SendEmail(account.Email!, account);
+            return Ok(new Notification
+            {
+                Success = true,
+                Message = $"Sent to email {email} successfully",
+                Data = null
+            });
+        }
+
+        // GET: api/Auths/ResetPassword
+        [HttpGet("ResetPassword")]
+        public async Task<ActionResult> GetResetPassword()
+        {
+            string input = Request.QueryString.ToString();
+            if (input.Length > 0)
+            {
+                string email = input.Substring(input.IndexOf('=') + 1);
+                var result = await _accountRepository.GetAccountByEmailAsync(email);
+                if (result == null)
+                {
+                    return Ok(new Notification
+                    {
+                        Success = false,
+                        Message = $"Email {email} Error",
+                        Data = null
+                    });
+                }
+                string password = email.Substring(0, email.IndexOf('@'));
+                await _accountRepository.UpdatePasswordAsync(result, password);
+                return Ok(new Notification
+                {
+                    Success = true,
+                    Message = $"Email {email} password changed successfully",
+                    Data = null
+                });
+            }
+            return Ok(new Notification
+            {
+                Success = true,
+                Message = $"0",
+                Data = Request.QueryString.ToString()
             });
         }
     }

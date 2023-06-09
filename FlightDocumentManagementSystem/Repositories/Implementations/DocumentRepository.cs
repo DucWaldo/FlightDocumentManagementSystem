@@ -48,7 +48,7 @@ namespace FlightDocumentManagementSystem.Repositories.Implementations
 
         public async Task<string> GetNextVersion(DocumentDTO document)
         {
-            var documents = await _dbSet.Where(d => d.FlightId == document.FlightId && d.Name! == document.File!.FileName)
+            var documents = await _dbSet.Where(d => d.FlightId == document.FlightId && d.Name! == document.File!.FileName && d.CategoryId == document.CategoryId)
                 .OrderByDescending(d => d.Version)
                 .Select(d => d.Version).
                 FirstOrDefaultAsync();

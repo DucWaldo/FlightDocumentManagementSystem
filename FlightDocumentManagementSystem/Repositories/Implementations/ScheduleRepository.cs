@@ -96,7 +96,7 @@ namespace FlightDocumentManagementSystem.Repositories.Implementations
 
         public async Task<List<Schedule>> GetAllScheduleAsync()
         {
-            var result = await GetAllAsync();
+            var result = await GetAllWithIncludeAsync(s => s.Airport!, s => s.Flight!, s => s.Aircraft!);
             return result;
         }
 

@@ -27,6 +27,12 @@ namespace FlightDocumentManagementSystem.Repositories.Implementations
             await DeleteAsync(member);
         }
 
+        public async Task<Member?> FindMemberByPermissionAsync(Permission permission, Account account)
+        {
+            var result = await _dbSet.FirstOrDefaultAsync(m => m.GroupId == permission.GroupId && m.AccountId == account.AccountId);
+            return result;
+        }
+
         public async Task<List<Member>> FindMemberByGroupAsync(Guid groupId)
         {
             var result = await _dbSet.Include(m => m.Group).Include(m => m.Account!.Role).Where(m => m.GroupId == groupId).ToListAsync();

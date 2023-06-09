@@ -17,14 +17,16 @@ namespace FlightDocumentManagementSystem.Controllers
         private readonly IFlightRepository _flightRepository;
         private readonly IAccountRepository _accountRepository;
         private readonly ISignatureRepository _signatureRepository;
+        private readonly IPermissionRepository _permissionRepository;
 
-        public DocumentsController(IDocumentRepository documentRepository, ICategoryRepository categoryRepository, IFlightRepository flightRepository, IAccountRepository accountRepository, ISignatureRepository signatureRepository)
+        public DocumentsController(IDocumentRepository documentRepository, ICategoryRepository categoryRepository, IFlightRepository flightRepository, IAccountRepository accountRepository, ISignatureRepository signatureRepository, IPermissionRepository permissionRepository)
         {
             _documentRepository = documentRepository;
             _categoryRepository = categoryRepository;
             _flightRepository = flightRepository;
             _accountRepository = accountRepository;
             _signatureRepository = signatureRepository;
+            _permissionRepository = permissionRepository;
         }
 
         // GET: api/Documents
@@ -124,6 +126,7 @@ namespace FlightDocumentManagementSystem.Controllers
         [Authorize(Roles = "Pilot")]
         public async Task<ActionResult<Document>> PostReturnDocument(Guid documentId, IFormFile file, IFormFile signatureFile)
         {
+
             var document = await _documentRepository.FindDocumentById(documentId);
             if (document == null)
             {
@@ -172,6 +175,16 @@ namespace FlightDocumentManagementSystem.Controllers
                 {
                     Success = false,
                     Message = "This account doesn't exist",
+                    Data = null
+                });
+            }
+
+            if (await _permissionRepository.CheckAccountPermissionAsync(account, document.Category!) == false)
+            {
+                return Ok(new Notification
+                {
+                    Success = false,
+                    Message = "This account does not have permission to modify",
                     Data = null
                 });
             }
