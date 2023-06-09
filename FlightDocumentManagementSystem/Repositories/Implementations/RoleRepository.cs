@@ -33,6 +33,12 @@ namespace FlightDocumentManagementSystem.Repositories.Implementations
             return result;
         }
 
+        public async Task<Role?> FindRoleByNameAsync(string name)
+        {
+            var result = await _dbSet.FirstOrDefaultAsync(r => r.Name == name);
+            return result;
+        }
+
         public async Task<List<Role>> GetAllRolesAsync()
         {
             return await GetAllAsync();

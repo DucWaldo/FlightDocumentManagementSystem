@@ -19,6 +19,12 @@ namespace FlightDocumentManagementSystem.Repositories.Implementations
             _configuration = configuration;
         }
 
+        public async Task DeleteTokenAsync(Account account)
+        {
+            var result = await _dbSet.Where(a => a.AccountId == account.AccountId).ToListAsync();
+            await RemoveAsync(result);
+        }
+
         public async Task<TokenManager?> GetTokenAsync(string refreshToken)
         {
             var result = await _dbSet.FirstOrDefaultAsync(t => t.RefreshToken == refreshToken);

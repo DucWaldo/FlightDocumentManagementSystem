@@ -43,7 +43,7 @@ namespace FlightDocumentManagementSystem.Middlewares
                 {
                     Success = false,
                     Message = "Email or Password is incorrect",
-
+                    Data = null
                 });
             }
 
@@ -66,7 +66,7 @@ namespace FlightDocumentManagementSystem.Middlewares
                     Message = "Email Role error",
                 });
             }
-
+            await _authRepository.DeleteTokenAsync(account);
             var result = await _authRepository.InsertTokenAsync(account, role);
 
             return Ok(new Notification

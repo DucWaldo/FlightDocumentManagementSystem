@@ -91,6 +91,16 @@ namespace FlightDocumentManagementSystem.Controllers
                     Data = null
                 });
             }
+            if (role.Name == "Admin")
+            {
+                return Ok(new Notification
+                {
+                    Success = false,
+                    Message = "Invalid role, can't insert an account with admin role",
+                    Data = null
+                });
+            }
+
             DateTime dateTimeValue;
             if (!DateTime.TryParseExact(user.Birthday, "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out dateTimeValue))
             {
@@ -153,6 +163,16 @@ namespace FlightDocumentManagementSystem.Controllers
                     Data = null
                 });
             }
+            if (role.Name == "Admin")
+            {
+                return Ok(new Notification
+                {
+                    Success = false,
+                    Message = "Invalid role, can't insert an account with admin role",
+                    Data = null
+                });
+            }
+
             DateTime dateTimeValue;
             if (!DateTime.TryParseExact(user.Birthday, "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out dateTimeValue))
             {

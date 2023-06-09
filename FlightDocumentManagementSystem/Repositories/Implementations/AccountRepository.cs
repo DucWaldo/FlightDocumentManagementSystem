@@ -86,5 +86,15 @@ namespace FlightDocumentManagementSystem.Repositories.Implementations
             account.TimeUpdate = DateTime.UtcNow;
             await UpdateAsync(account);
         }
+
+        public async Task UpdateRoleAdminAsync(Account oldAccount, Account newAccount, Role adminRole, Role staffRole)
+        {
+            oldAccount.RoleId = staffRole.RoleId;
+            oldAccount.TimeUpdate = DateTime.UtcNow;
+            newAccount.RoleId = adminRole.RoleId;
+            newAccount.TimeUpdate = DateTime.UtcNow;
+            await UpdateAsync(oldAccount);
+            await UpdateAsync(newAccount);
+        }
     }
 }

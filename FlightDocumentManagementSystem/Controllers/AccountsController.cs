@@ -1,8 +1,11 @@
 ﻿using FlightDocumentManagementSystem.Data;
 using FlightDocumentManagementSystem.Helpers;
+using FlightDocumentManagementSystem.Middlewares;
 using FlightDocumentManagementSystem.Models;
 using FlightDocumentManagementSystem.Repositories.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace FlightDocumentManagementSystem.Controllers
 {
@@ -19,7 +22,7 @@ namespace FlightDocumentManagementSystem.Controllers
             _roleRepository = roleRepository;
         }
 
-        // GET: api/Roles
+        // GET: api/Accounts
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Account>>> GetAccounts()
         {
@@ -32,7 +35,7 @@ namespace FlightDocumentManagementSystem.Controllers
             });
         }
 
-        // GET: api/Roles/5
+        // GET: api/Accounts/5
         [HttpGet("{id}")]
         public async Task<ActionResult<Account>> FindAccount(Guid id)
         {
@@ -54,7 +57,7 @@ namespace FlightDocumentManagementSystem.Controllers
             });
         }
 
-        // POST: api/Roles
+        // POST: api/Accounts
         [HttpPost]
         public async Task<ActionResult<Account>> PostAccount([FromForm] AccountDTO account)
         {
@@ -107,7 +110,52 @@ namespace FlightDocumentManagementSystem.Controllers
             });
         }
 
-        // DELETE: api/Roles/5
+        // POST: api/Accounts/ChangeAdmin
+        [HttpPut("ChangeAdmin")]
+        [Authorize(Roles = "Admin")]
+        public async Task<ActionResult<Account>> PutChangeAdmin(string email, string password)
+        {
+            var oldAdmin = await _accountRepository.FindAccountByIdAsync(Guid.Parse(HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier)));
+            var newAdmin = await _accountRepository.GetAccountByEmailAsync(email);
+            if (oldAdmin == null || newAdmin == null)
+            {
+                return Ok(new Notification
+                {
+                    Success = false,
+                    Message = "Account doesn't exist or invalid",
+                    Data = null
+                });
+            }
+            if (PasswordEncryption.VerifyPassword(password, oldAdmin.Password!) == false)
+            {
+                return Ok(new Notification
+                {
+                    Success = false,
+                    Message = "Invalid password",
+                    Data = null
+                });
+            }
+            var adminRole = await _roleRepository.FindRoleByNameAsync("Admin");
+            var staffRole = await _roleRepository.FindRoleByNameAsync("Staff");
+            if (adminRole == null || staffRole == null)
+            {
+                return Ok(new Notification
+                {
+                    Success = false,
+                    Message = "This role doesn't exist",
+                    Data = null
+                });
+            }
+            await _accountRepository.UpdateRoleAdminAsync(oldAdmin, newAdmin, adminRole, staffRole);
+            return Ok(new Notification
+            {
+                Success = true,
+                Message = $"Admin role tranferred from account {oldAdmin.Email} to account {newAdmin.Email} successfully",
+                Data = null
+            });
+        }
+
+        // DELETE: api/Accounts/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteAccount(Guid id)
         {

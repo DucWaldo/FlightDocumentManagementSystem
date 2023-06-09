@@ -11,6 +11,7 @@ namespace FlightDocumentManagementSystem.Repositories
         Task InsertAsync(TEntity entity);
         Task UpdateAsync(TEntity entity);
         Task DeleteAsync(TEntity entity);
+        Task RemoveAsync(List<TEntity> entity);
         Task<TEntity?> FindByIdAsync(Guid id);
     }
 
@@ -62,6 +63,12 @@ namespace FlightDocumentManagementSystem.Repositories
             }
 
             return await query.ToListAsync();
+        }
+
+        public async Task RemoveAsync(List<TEntity> entity)
+        {
+            _dbSet.RemoveRange(entity);
+            await _context.SaveChangesAsync();
         }
     }
 }

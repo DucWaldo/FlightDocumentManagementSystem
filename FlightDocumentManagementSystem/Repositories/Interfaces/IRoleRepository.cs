@@ -7,6 +7,7 @@ namespace FlightDocumentManagementSystem.Repositories.Interfaces
     {
         public Task<List<Role>> GetAllRolesAsync();
         public Task<Role?> FindRoleByIdAsync(Guid id);
+        public Task<Role?> FindRoleByNameAsync(string name);
         public Task<Role> InsertRoleAsync(RoleDTO role);
         public Task<Role> UpdateRoleAsync(Role oldRole, RoleDTO newRole);
         public Task DeleteRoleAsync(Role role);
