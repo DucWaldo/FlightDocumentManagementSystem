@@ -14,6 +14,7 @@ namespace FlightDocumentManagementSystem.Contexts
         public DbSet<Category> Categories { get; set; }
         public DbSet<Display> Displays { get; set; }
         public DbSet<Document> Documents { get; set; }
+        public DbSet<EmailLog> EmailLogs { get; set; }
         public DbSet<Flight> Flights { get; set; }
         public DbSet<Group> Groups { get; set; }
         public DbSet<Member> Members { get; set; }

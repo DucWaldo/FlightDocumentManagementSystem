@@ -77,7 +77,8 @@ builder.Services.AddScoped<IRoleRepository, RoleRepository>()
     .AddScoped<IScheduleRepository, ScheduleRepository>()
     .AddScoped<IDocumentRepository, DocumentRepository>()
     .AddScoped<ISignatureRepository, SignatureRepository>()
-    .AddScoped<IDisplayRepository, DisplayRepository>();
+    .AddScoped<IDisplayRepository, DisplayRepository>()
+    .AddScoped<IEmailLogRepository, EmailLogRepository>();
 
 var app = builder.Build();
 

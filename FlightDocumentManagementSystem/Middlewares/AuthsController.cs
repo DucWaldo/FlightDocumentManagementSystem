@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 using System.Text;
 
 namespace FlightDocumentManagementSystem.Middlewares
@@ -16,16 +17,19 @@ namespace FlightDocumentManagementSystem.Middlewares
         private readonly IAuthRepository _authRepository;
         private readonly IRoleRepository _roleRepository;
         private readonly IConfiguration _configuration;
+        private readonly IEmailLogRepository _emailLogRepository;
 
         public AuthsController(IAccountRepository accountRepository,
             IAuthRepository authRepository,
             IRoleRepository roleRepository,
-            IConfiguration configuration)
+            IConfiguration configuration,
+            IEmailLogRepository emailLogRepository)
         {
             _accountRepository = accountRepository;
             _authRepository = authRepository;
             _roleRepository = roleRepository;
             _configuration = configuration;
+            _emailLogRepository = emailLogRepository;
         }
 
         // POST: api/Auths/Login
@@ -78,7 +82,6 @@ namespace FlightDocumentManagementSystem.Middlewares
         public async Task<IActionResult> RefreshToken(Token tokens)
         {
             var handler = new JwtSecurityTokenHandler();
-            //var secretKeyBytes = Encoding.UTF8.GetBytes(_configuration["Jwt:Key"] ?? "");
             var tokenValidateParam = new TokenValidationParameters
             {
                 ValidateIssuer = false,
@@ -213,11 +216,56 @@ namespace FlightDocumentManagementSystem.Middlewares
                     Data = null
                 });
             }
-            Email.SendEmail(account.Email!, account);
+            var emailLogId = await _emailLogRepository.InsertEmailLogAsync(account.AccountId);
+            Email.SendEmail(account.Email!, "Reset Password", emailLogId, 1, "");
+
             return Ok(new Notification
             {
                 Success = true,
                 Message = $"Sent to email {email} successfully",
+                Data = null
+            });
+        }
+
+        // POST: api/Auths/ChangePassword
+        [HttpPost("ChangePassword")]
+        [Authorize]
+        public async Task<ActionResult> PostChangePassword(string oldPassword, string newPassword)
+        {
+            if (string.IsNullOrEmpty(oldPassword) || string.IsNullOrEmpty(oldPassword))
+            {
+                return Ok(new Notification
+                {
+                    Success = false,
+                    Message = "Please enter all information",
+                    Data = null
+                });
+            }
+            var account = await _accountRepository.FindAccountByIdAsync(Guid.Parse(HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier)));
+            if (account == null)
+            {
+                return Ok(new Notification
+                {
+                    Success = false,
+                    Message = "This Account doesn't exist or invalid",
+                    Data = null
+                });
+            }
+            if (PasswordEncryption.VerifyPassword(oldPassword, account.Password!) == false)
+            {
+                return Ok(new Notification
+                {
+                    Success = false,
+                    Message = "Old password is incorrect",
+                    Data = null
+                });
+            }
+            var emailLogId = await _emailLogRepository.InsertEmailLogAsync(account.AccountId);
+            Email.SendEmail(account.Email!, "Reset Password", emailLogId, 2, newPassword);
+            return Ok(new Notification
+            {
+                Success = true,
+                Message = $"Sent to email {account.Email} successfully",
                 Data = null
             });
         }
@@ -229,9 +277,22 @@ namespace FlightDocumentManagementSystem.Middlewares
             string input = Request.QueryString.ToString();
             if (input.Length > 0)
             {
-                string email = input.Substring(input.IndexOf('=') + 1);
-                var result = await _accountRepository.GetAccountByEmailAsync(email);
-                if (result == null)
+                string[] parameters = input.TrimStart('?').Split('&');
+
+                Dictionary<string, string> queryParams = new Dictionary<string, string>();
+                foreach (string parameter in parameters)
+                {
+                    string[] keyValue = parameter.Split('=');
+                    string key = keyValue[0];
+                    string value = keyValue[1];
+                    queryParams.Add(key, value);
+                }
+
+                string email = queryParams["email"];
+                string emailLogId = queryParams["id"];
+
+                var account = await _accountRepository.GetAccountByEmailAsync(email);
+                if (account == null)
                 {
                     return Ok(new Notification
                     {
@@ -240,8 +301,122 @@ namespace FlightDocumentManagementSystem.Middlewares
                         Data = null
                     });
                 }
+
+                var emailLog = await _emailLogRepository.FindEmailLogByIdAsync(Guid.Parse(emailLogId));
+                if (emailLog == null)
+                {
+                    return Ok(new Notification
+                    {
+                        Success = false,
+                        Message = $"Error Reset Password",
+                        Data = null
+                    });
+                }
+
+                var status = await _emailLogRepository.CheckVerifyAsync(emailLog.EmailLogId, account.AccountId);
+                if (status == null)
+                {
+                    return Ok(new Notification
+                    {
+                        Success = false,
+                        Message = $"Error Link",
+                        Data = null
+                    });
+                }
+                else if (status == true)
+                {
+                    return Ok(new Notification
+                    {
+                        Success = false,
+                        Message = $"This link is no longer available",
+                        Data = null
+                    });
+                }
+
                 string password = email.Substring(0, email.IndexOf('@'));
-                await _accountRepository.UpdatePasswordAsync(result, password);
+                await _accountRepository.UpdatePasswordAsync(account, password);
+                await _emailLogRepository.UpdateEmailLogAsync(emailLog);
+                return Ok(new Notification
+                {
+                    Success = true,
+                    Message = $"Email {email} password reset successfully",
+                    Data = null
+                });
+            }
+            return Ok(new Notification
+            {
+                Success = true,
+                Message = $"Please choose forgot password",
+                Data = null
+            });
+        }
+
+        // GET: api/Auths/UpdatePassword
+        [HttpGet("UpdatePassword")]
+        public async Task<ActionResult> GetUpdatePassword()
+        {
+            string input = Request.QueryString.ToString();
+            if (input.Length > 0)
+            {
+                string[] parameters = input.TrimStart('?').Split('&');
+
+                Dictionary<string, string> queryParams = new Dictionary<string, string>();
+                foreach (string parameter in parameters)
+                {
+                    string[] keyValue = parameter.Split('=');
+                    string key = keyValue[0];
+                    string value = keyValue[1];
+                    queryParams.Add(key, value);
+                }
+
+                string email = queryParams["email"];
+                string emailLogId = queryParams["id"];
+                string newPassword = queryParams["password"];
+
+                var account = await _accountRepository.GetAccountByEmailAsync(email);
+                if (account == null)
+                {
+                    return Ok(new Notification
+                    {
+                        Success = false,
+                        Message = $"Email {email} Error",
+                        Data = null
+                    });
+                }
+
+                var emailLog = await _emailLogRepository.FindEmailLogByIdAsync(Guid.Parse(emailLogId));
+                if (emailLog == null)
+                {
+                    return Ok(new Notification
+                    {
+                        Success = false,
+                        Message = $"Error Reset Password",
+                        Data = null
+                    });
+                }
+
+                var status = await _emailLogRepository.CheckVerifyAsync(emailLog.EmailLogId, account.AccountId);
+                if (status == null)
+                {
+                    return Ok(new Notification
+                    {
+                        Success = false,
+                        Message = $"Error Link",
+                        Data = null
+                    });
+                }
+                else if (status == true)
+                {
+                    return Ok(new Notification
+                    {
+                        Success = false,
+                        Message = $"This link is no longer available",
+                        Data = null
+                    });
+                }
+
+                await _accountRepository.UpdatePasswordAsync(account, newPassword);
+                await _emailLogRepository.UpdateEmailLogAsync(emailLog);
                 return Ok(new Notification
                 {
                     Success = true,
@@ -252,8 +427,8 @@ namespace FlightDocumentManagementSystem.Middlewares
             return Ok(new Notification
             {
                 Success = true,
-                Message = $"0",
-                Data = Request.QueryString.ToString()
+                Message = $"Please choose change password",
+                Data = null
             });
         }
     }

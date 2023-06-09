@@ -1,5 +1,4 @@
-﻿using FlightDocumentManagementSystem.Models;
-using MailKit.Net.Smtp;
+﻿using MailKit.Net.Smtp;
 using MailKit.Security;
 using MimeKit;
 
@@ -28,14 +27,33 @@ namespace FlightDocumentManagementSystem.Helpers
             subject = _configuration["Mail:Subject"]!;
         }
 
-        public static void SendEmail(string recipient, Account account)
+        public static void SendEmail(string recipient, string funcString, string id, int action, string pwd)
         {
-            string htmlBody = EmailContent(account);
+            string htmlBody = string.Empty;
+            switch (action)
+            {
+                case 1:
+                    {
+                        htmlBody = EmailResetPasswordContent(recipient, id);
+                        break;
+                    };
+                case 2:
+                    {
+                        htmlBody = EmailChangePasswordContent(recipient, pwd, id);
+                        break;
+                    };
+                case 3:
+                    {
+                        htmlBody = EmailResetPasswordContent(recipient, id);
+                        break;
+                    };
+            }
+            //string htmlBody = EmailResetPasswordContent(recipient, id);
 
             var message = new MimeMessage();
             message.From.Add(new MailboxAddress(name, email));
             message.To.Add(new MailboxAddress("", recipient));
-            message.Subject = subject;
+            message.Subject = funcString + " - " + subject;
 
             var bodyBuilder = new BodyBuilder();
             bodyBuilder.HtmlBody = htmlBody;
@@ -53,25 +71,103 @@ namespace FlightDocumentManagementSystem.Helpers
             }
         }
 
-        public static string EmailContent(Account account)
+        public static string EmailResetPasswordContent(string email, string id)
         {
-            var resetPasswordLink = $"https://localhost:7099/api/Auths/ResetPassword?email={account.Email}";
-            string emailContent = $@"<!DOCTYPE html>
-                                <html>
-                                <head>
-                                  <title>Đặt lại mật khẩu</title>
-                                </head>
-                                <body>
-                                  <h1>Đặt lại mật khẩu</h1>
-                                  <p>Xin chào, {account.Email},</p>
-                                  <p>Bạn đã yêu cầu đặt lại mật khẩu của tài khoản. Nhấn vào liên kết bên dưới để đặt lại mật khẩu:</p>
-                                  <p><a href=""{resetPasswordLink}"">Đặt lại mật khẩu</a></p>
-                                  <p>Nếu bạn không yêu cầu đặt lại mật khẩu, vui lòng bỏ qua email này.</p>
-                                  <p>Trân trọng,</p>
-                                  <p>Ban quản trị</p>
-                                </body>
-                                </html>";
+            var resetPasswordLink = $"https://localhost:7099/api/Auths/ResetPassword?email={email}&id={id}";
+            var logoLink = Cloudinary.GetImageUrl("FlightDocumentManagementSystem/Logo");
+            string emailContent = $@"   <!DOCTYPE html>
+                                        <html>
+                                        <head>
+                                            <title>Reset Password</title>
+                                            <style>
+                                            .header {{
+                                                text-align: center;
+                                                margin-bottom: 20px;
+                                            }}
+                                            .logo-img {{
+                                                max-width: 200px;
+                                            }}
+                                            .button-container {{
+                                                text-align: center;
+                                                margin-top: 20px;
+                                            }}
+                                            .button-container a {{
+                                                background-color: #4CAF50;
+                                                border: none;
+                                                color: white;
+                                                padding: 15px 32px;
+                                                text-align: center;
+                                                text-decoration: none;
+                                                display: inline-block;
+                                                font-size: 16px;
+                                                margin: 4px 2px;
+                                                cursor: pointer;
+                                            }}
+                                            </style>
+                                        </head>
+                                        <body>
+                                            <div class=""header"">
+                                            <img src=""{logoLink}"" alt=""Logo"" class=""logo-img"">
+                                            </div>
+                                            <h1>Reset Password</h1>
+                                            <p>Hello, {email},</p>
+                                            <p>You have requested to reset the password for your account. Click the button below to reset your password:</p>
+                                            <div class=""button-container""><a href=""{resetPasswordLink}"">Reset Password</button></a></div>
+                                            <p>If you did not request to reset your password, please ignore this email.</p>
+                                            <p>Regards,</p>
+                                            <p>Admin</p>
+                                        </body>
+                                        </html>";
+            return emailContent;
+        }
 
+        public static string EmailChangePasswordContent(string email, string newPassword, string id)
+        {
+            var resetPasswordLink = $"https://localhost:7099/api/Auths/UpdatePassword?email={email}&password={newPassword}&id={id}";
+            var logoLink = Cloudinary.GetImageUrl("FlightDocumentManagementSystem/Logo");
+            string emailContent = $@"   <!DOCTYPE html>
+                                        <html>
+                                        <head>
+                                            <title>Change Password</title>
+                                            <style>
+                                            .header {{
+                                                text-align: center;
+                                                margin-bottom: 20px;
+                                            }}
+                                            .logo-img {{
+                                                max-width: 200px;
+                                            }}
+                                            .button-container {{
+                                                text-align: center;
+                                                margin-top: 20px;
+                                            }}
+                                            .button-container a {{
+                                                background-color: #4CAF50;
+                                                border: none;
+                                                color: white;
+                                                padding: 15px 32px;
+                                                text-align: center;
+                                                text-decoration: none;
+                                                display: inline-block;
+                                                font-size: 16px;
+                                                margin: 4px 2px;
+                                                cursor: pointer;
+                                            }}
+                                            </style>
+                                        </head>
+                                        <body>
+                                            <div class=""header"">
+                                            <img src=""{logoLink}"" alt=""Logo"" class=""logo-img"">
+                                            </div>
+                                            <h1>Change Password</h1>
+                                            <p>Hello, {email},</p>
+                                            <p>You have requested to change the password for your account. Click the button below to change your password:</p>
+                                            <div class=""button-container""><a href=""{resetPasswordLink}"">Change Password</button></a></div>
+                                            <p>If you did not request to change your password, please ignore this email.</p>
+                                            <p>Regards,</p>
+                                            <p>Admin</p>
+                                        </body>
+                                        </html>";
             return emailContent;
         }
     }

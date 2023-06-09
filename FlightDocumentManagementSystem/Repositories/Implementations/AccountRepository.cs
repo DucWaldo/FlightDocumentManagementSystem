@@ -83,6 +83,7 @@ namespace FlightDocumentManagementSystem.Repositories.Implementations
         public async Task UpdatePasswordAsync(Account account, string password)
         {
             account.Password = PasswordEncryption.EncryptPassword(password, Generate.GetSalt());
+            account.TimeUpdate = DateTime.UtcNow;
             await UpdateAsync(account);
         }
     }

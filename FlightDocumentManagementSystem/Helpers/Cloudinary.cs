@@ -48,5 +48,13 @@ namespace FlightDocumentManagementSystem.Helpers
             }
             return false;
         }
+
+        public static string GetImageUrl(string publicId)
+        {
+            var getParams = new GetResourceParams(publicId);
+            var result = _cloudinary.GetResource(getParams);
+
+            return result.SecureUrl.ToString();
+        }
     }
 }
