@@ -1,12 +1,14 @@
 ﻿using FlightDocumentManagementSystem.Helpers;
 using FlightDocumentManagementSystem.Models;
 using FlightDocumentManagementSystem.Repositories.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FlightDocumentManagementSystem.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [Authorize(Policy = "AdminPolicy")]
     public class DisplaysController : ControllerBase
     {
         private readonly IDisplayRepository _displayRepository;

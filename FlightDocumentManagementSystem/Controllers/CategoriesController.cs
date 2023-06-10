@@ -2,12 +2,14 @@
 using FlightDocumentManagementSystem.Helpers;
 using FlightDocumentManagementSystem.Models;
 using FlightDocumentManagementSystem.Repositories.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FlightDocumentManagementSystem.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [Authorize(Policy = "AdminOrStaffPolicy")]
     public class CategoriesController : ControllerBase
     {
         private readonly ICategoryRepository _categoryRepository;
@@ -65,6 +67,39 @@ namespace FlightDocumentManagementSystem.Controllers
             });
         }
 
+        // POST: api/Categories
+        [HttpPost]
+        public async Task<ActionResult<Category>> PostCategory(CategoryDTO category)
+        {
+            if (string.IsNullOrEmpty(category.Name))
+            {
+                return Ok(new Notification
+                {
+                    Success = false,
+                    Message = "Please enter all information",
+                    Data = null
+                });
+            }
+
+            if (await _categoryRepository.CheckCategoryNameToInsertAsync(category.Name) == false)
+            {
+                return Ok(new Notification
+                {
+                    Success = false,
+                    Message = "New category name already exist",
+                    Data = null
+                });
+            }
+
+            var result = await _categoryRepository.InsertCategoryAsync(category);
+            return Ok(new Notification
+            {
+                Success = true,
+                Message = "Insert successfully",
+                Data = result
+            });
+        }
+
         // PUT: api/Categories/5
         [HttpPut("{id}")]
         public async Task<IActionResult> PutCategory(Guid id, CategoryDTO newCategory)
@@ -104,39 +139,6 @@ namespace FlightDocumentManagementSystem.Controllers
             {
                 Success = true,
                 Message = "Update successfully",
-                Data = result
-            });
-        }
-
-        // POST: api/Categories
-        [HttpPost]
-        public async Task<ActionResult<Category>> PostCategory(CategoryDTO category)
-        {
-            if (string.IsNullOrEmpty(category.Name))
-            {
-                return Ok(new Notification
-                {
-                    Success = false,
-                    Message = "Please enter all information",
-                    Data = null
-                });
-            }
-
-            if (await _categoryRepository.CheckCategoryNameToInsertAsync(category.Name) == false)
-            {
-                return Ok(new Notification
-                {
-                    Success = false,
-                    Message = "New category name already exist",
-                    Data = null
-                });
-            }
-
-            var result = await _categoryRepository.InsertCategoryAsync(category);
-            return Ok(new Notification
-            {
-                Success = true,
-                Message = "Insert successfully",
                 Data = result
             });
         }

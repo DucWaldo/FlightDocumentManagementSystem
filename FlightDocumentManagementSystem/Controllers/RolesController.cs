@@ -2,12 +2,14 @@
 using FlightDocumentManagementSystem.Helpers;
 using FlightDocumentManagementSystem.Models;
 using FlightDocumentManagementSystem.Repositories.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FlightDocumentManagementSystem.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize(Policy = "AdminPolicy")]
     public class RolesController : ControllerBase
     {
         private readonly IRoleRepository _roleRepository;

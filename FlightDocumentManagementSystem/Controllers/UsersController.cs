@@ -2,6 +2,7 @@
 using FlightDocumentManagementSystem.Helpers;
 using FlightDocumentManagementSystem.Models;
 using FlightDocumentManagementSystem.Repositories.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Globalization;
 using System.Text.RegularExpressions;
@@ -10,6 +11,7 @@ namespace FlightDocumentManagementSystem.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize(Policy = "AdminPolicy")]
     public class UsersController : ControllerBase
     {
         private readonly IUserRepository _userRepository;

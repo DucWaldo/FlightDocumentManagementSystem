@@ -1,4 +1,5 @@
 using FlightDocumentManagementSystem.Contexts;
+using FlightDocumentManagementSystem.Middlewares;
 using FlightDocumentManagementSystem.Repositories.Implementations;
 using FlightDocumentManagementSystem.Repositories.Interfaces;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -63,6 +64,18 @@ builder.Services.AddAuthentication(options =>
         ClockSkew = TimeSpan.Zero
     };
 });
+
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("AdminPolicy", policy => policy.RequireRole(Assignment.ADMIN));
+    options.AddPolicy("StaffPolicy", policy => policy.RequireRole(Assignment.STAFF));
+    options.AddPolicy("PilotPolicy", policy => policy.RequireRole(Assignment.PILOT));
+    options.AddPolicy("CrewPolicy", policy => policy.RequireRole(Assignment.CREW));
+    options.AddPolicy("AdminOrStaffPolicy", policy => policy.RequireRole(Assignment.ADMIN, Assignment.STAFF));
+    options.AddPolicy("PilotOrCrewPolicy", policy => policy.RequireRole(Assignment.PILOT, Assignment.CREW));
+    options.AddPolicy("AllPolicy", policy => policy.RequireRole(Assignment.ADMIN, Assignment.STAFF, Assignment.PILOT, Assignment.CREW));
+});
+
 builder.Services.AddScoped<IRoleRepository, RoleRepository>()
     .AddScoped<IAccountRepository, AccountRepository>()
     .AddScoped<IAuthRepository, AuthRepository>()

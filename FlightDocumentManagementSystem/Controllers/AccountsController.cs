@@ -11,6 +11,7 @@ namespace FlightDocumentManagementSystem.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize(Policy = "AdminPolicy")]
     public class AccountsController : ControllerBase
     {
         private readonly IAccountRepository _accountRepository;
@@ -39,7 +40,7 @@ namespace FlightDocumentManagementSystem.Controllers
         [HttpGet("Paging")]
         public async Task<ActionResult<IEnumerable<Account>>> GetAccountsPaging(int pageNumber, int pageSize)
         {
-            var result = await _accountRepository.GetAllAccountsPagingAsync(pageNumber, pageNumber);
+            var result = await _accountRepository.GetAllAccountsPagingAsync(pageNumber, pageSize);
             return Ok(new Notification
             {
                 Success = true,

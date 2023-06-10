@@ -10,7 +10,7 @@ namespace FlightDocumentManagementSystem.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize]
+    [Authorize(Policy = "AdminOrStaffPolicy")]
     public class GroupsController : ControllerBase
     {
         private readonly IGroupRepository _groupRepository;

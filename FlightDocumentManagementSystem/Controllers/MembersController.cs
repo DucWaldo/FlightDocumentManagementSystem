@@ -2,12 +2,14 @@
 using FlightDocumentManagementSystem.Helpers;
 using FlightDocumentManagementSystem.Models;
 using FlightDocumentManagementSystem.Repositories.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FlightDocumentManagementSystem.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize(Policy = "AdminOrStaffPolicy")]
     public class MembersController : ControllerBase
     {
         private readonly IMemberRepository _memberRepository;
@@ -34,8 +36,8 @@ namespace FlightDocumentManagementSystem.Controllers
             });
         }
 
-        // GET: api/Members/GetGroup
-        [HttpGet("GetGroup/{groupId}")]
+        // GET: api/Members/GetInGroup/5
+        [HttpGet("GetInGroup/{groupId}")]
         public async Task<ActionResult<IEnumerable<Member>>> GetMembersInGroup(Guid groupId)
         {
             var result = await _memberRepository.FindMemberByGroupAsync(groupId);
@@ -96,7 +98,7 @@ namespace FlightDocumentManagementSystem.Controllers
             });
         }
 
-        // POST: api/Members/ListMember
+        // POST: api/Members/ListMember/5
         [HttpPost("ListMember/{groupId}")]
         public async Task<ActionResult<Member>> PostMembers([FromForm] List<Guid> accountId, Guid groupId)
         {

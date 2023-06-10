@@ -31,6 +31,7 @@ namespace FlightDocumentManagementSystem.Controllers
 
         // GET: api/Documents
         [HttpGet]
+        [Authorize(Policy = "AllPolicy")]
         public async Task<ActionResult<IEnumerable<Document>>> GetDocuments()
         {
             var result = await _documentRepository.GetAllDocumentAsync();
@@ -44,6 +45,7 @@ namespace FlightDocumentManagementSystem.Controllers
 
         // GET: api/Documents/Paging
         [HttpGet("Paging")]
+        [Authorize(Policy = "AllPolicy")]
         public async Task<ActionResult<IEnumerable<Document>>> GetDocumentsPaging(int pageNumber, int pageSize)
         {
             var result = await _documentRepository.GetAllDocumentPagingAsync(pageNumber, pageSize);
@@ -57,6 +59,7 @@ namespace FlightDocumentManagementSystem.Controllers
 
         // GET: api/Documents/5
         [HttpGet("{id}")]
+        [Authorize(Policy = "AllPolicy")]
         public async Task<ActionResult<Document>> GetDocument(Guid id)
         {
             var result = await _documentRepository.FindDocumentById(id);
@@ -79,7 +82,7 @@ namespace FlightDocumentManagementSystem.Controllers
 
         // POST: api/Documents/SendFile
         [HttpPost("SendFile")]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Policy = "AdminOrStaffPolicy")]
         public async Task<ActionResult<Document>> PostSendDocument([FromForm] DocumentDTO document)
         {
             if (document.File == null || document.File.Length == 0)
@@ -136,7 +139,7 @@ namespace FlightDocumentManagementSystem.Controllers
 
         // POST: api/Documents/ReturnFile/{documentId}
         [HttpPost("ReturnFile/{documentId}")]
-        [Authorize(Roles = "Pilot")]
+        [Authorize(Policy = "PilotOrCrewPolicy")]
         public async Task<ActionResult<Document>> PostReturnDocument(Guid documentId, IFormFile file, IFormFile signatureFile)
         {
 
@@ -214,6 +217,7 @@ namespace FlightDocumentManagementSystem.Controllers
 
         // DELETE: api/Documents/5
         [HttpDelete("{id}")]
+        [Authorize(Policy = "AllPolicy")]
         public async Task<IActionResult> DeleteDocument(Guid id)
         {
             var document = await _documentRepository.FindDocumentById(id);
