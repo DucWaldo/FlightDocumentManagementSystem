@@ -263,7 +263,7 @@ namespace FlightDocumentManagementSystem.Middlewares
             }
             var emailLogId = await _emailLogRepository.InsertEmailLogAsync(account.AccountId);
             var emailHtml = Email.EmailChangePasswordContent(account.Email!, newPassword, emailLogId);
-            Email.SendEmail(account.Email!, "Reset Password", emailHtml);
+            Email.SendEmail(account.Email!, "Change Password", emailHtml);
             return Ok(new Notification
             {
                 Success = true,

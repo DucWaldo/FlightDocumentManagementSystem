@@ -1,5 +1,4 @@
-﻿using FlightDocumentManagementSystem.Data;
-using FlightDocumentManagementSystem.Helpers;
+﻿using FlightDocumentManagementSystem.Helpers;
 using FlightDocumentManagementSystem.Middlewares;
 using FlightDocumentManagementSystem.Models;
 using FlightDocumentManagementSystem.Repositories.Interfaces;
@@ -11,7 +10,6 @@ namespace FlightDocumentManagementSystem.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize(Policy = "AdminPolicy")]
     public class AccountsController : ControllerBase
     {
         private readonly IAccountRepository _accountRepository;
@@ -25,6 +23,7 @@ namespace FlightDocumentManagementSystem.Controllers
 
         // GET: api/Accounts
         [HttpGet]
+        [Authorize(Policy = "AdminPolicy")]
         public async Task<ActionResult<IEnumerable<Account>>> GetAccounts()
         {
             var result = await _accountRepository.GetAllAccountsAsync();
@@ -38,6 +37,7 @@ namespace FlightDocumentManagementSystem.Controllers
 
         // GET: api/Accounts/Paging
         [HttpGet("Paging")]
+        [Authorize(Policy = "AdminPolicy")]
         public async Task<ActionResult<IEnumerable<Account>>> GetAccountsPaging(int pageNumber, int pageSize)
         {
             var result = await _accountRepository.GetAllAccountsPagingAsync(pageNumber, pageSize);
@@ -51,6 +51,7 @@ namespace FlightDocumentManagementSystem.Controllers
 
         // GET: api/Accounts/5
         [HttpGet("{id}")]
+        [Authorize]
         public async Task<ActionResult<Account>> GetAccount(Guid id)
         {
             var result = await _accountRepository.FindAccountByIdAsync(id);
@@ -71,62 +72,9 @@ namespace FlightDocumentManagementSystem.Controllers
             });
         }
 
-        // POST: api/Accounts
-        [HttpPost]
-        public async Task<ActionResult<Account>> PostAccount([FromForm] AccountDTO account)
-        {
-            if (string.IsNullOrEmpty(account.Email) || string.IsNullOrEmpty(account.Password) || account.RoleId == Guid.Empty)
-            {
-                return Ok(new Notification
-                {
-                    Success = false,
-                    Message = "Please Enter All Information",
-                    Data = null
-                });
-            }
-
-            var role = await _roleRepository.FindRoleByIdAsync(account.RoleId);
-            if (role == null)
-            {
-                return Ok(new Notification
-                {
-                    Success = false,
-                    Message = "This role doesn't exist",
-                    Data = null
-                });
-            }
-            if (Check.IsEmailCompany(account.Email!) == false)
-            {
-                return Ok(new Notification
-                {
-                    Success = false,
-                    Message = "Invalid email format email@vietjetair.com",
-                    Data = null
-                });
-            }
-            var checkEmailExist = await _accountRepository.CheckIsExistByEmail(account.Email);
-            if (checkEmailExist == true)
-            {
-                return Ok(new Notification
-                {
-                    Success = false,
-                    Message = "This account already exist",
-                    Data = null
-                });
-            }
-
-            var result = await _accountRepository.InsertAccountAsync(account);
-            return Ok(new Notification
-            {
-                Success = true,
-                Message = "Insert Successfully",
-                Data = result
-            });
-        }
-
-        // POST: api/Accounts/ChangeAdmin
+        // PUT: api/Accounts/ChangeAdmin
         [HttpPut("ChangeAdmin")]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Policy = "AdminPolicy")]
         public async Task<ActionResult<Account>> PutChangeAdmin(string email, string password)
         {
             var oldAdmin = await _accountRepository.FindAccountByIdAsync(Guid.Parse(HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier)));
@@ -165,30 +113,6 @@ namespace FlightDocumentManagementSystem.Controllers
             {
                 Success = true,
                 Message = $"Admin role tranferred from account {oldAdmin.Email} to account {newAdmin.Email} successfully",
-                Data = null
-            });
-        }
-
-        // DELETE: api/Accounts/5
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteAccount(Guid id)
-        {
-            var account = await _accountRepository.FindAccountByIdAsync(id);
-            if (account == null)
-            {
-                return Ok(new Notification
-                {
-                    Success = false,
-                    Message = "This account doesn't exist",
-                    Data = null
-                });
-            }
-
-            await _accountRepository.DeleteAccountAsync(account);
-            return Ok(new Notification
-            {
-                Success = true,
-                Message = "Delete Successfully",
                 Data = null
             });
         }

@@ -8,7 +8,6 @@ namespace FlightDocumentManagementSystem.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    [Authorize(Policy = "AdminPolicy")]
     public class DisplaysController : ControllerBase
     {
         private readonly IDisplayRepository _displayRepository;
@@ -33,6 +32,7 @@ namespace FlightDocumentManagementSystem.Controllers
 
         // PUT: api/Display/UpdateLogo
         [HttpPut("UpdateLogo")]
+        [Authorize(Policy = "AdminPolicy")]
         public async Task<IActionResult> PutLogo(IFormFile logo)
         {
             var display = await _displayRepository.GetAllDisplaysAsync();
@@ -58,6 +58,7 @@ namespace FlightDocumentManagementSystem.Controllers
 
         // PUT: api/Display/UpdateCaptcha
         [HttpPut("UpdateCaptcha")]
+        [Authorize(Policy = "AdminPolicy")]
         public async Task<IActionResult> PutCaptcha(bool status)
         {
             var display = await _displayRepository.GetAllDisplaysAsync();
